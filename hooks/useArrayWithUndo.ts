@@ -13,7 +13,13 @@ type TReturn<T> = [
  * Custom hook that will provide an array of elements that can be added to,
  * as well as the option to undo adding elements, and redoing those undos.
  * @param defaultValue (optional) Array that is to be used as the initial state
- * @returns [elementsArray, undoableCount, addFunction, undofunction, redoFunction, resetFunction]
+ * @returns [elementsArray, redoableCount, push, undo, redo, reset]
+ * elementsArray: The array with the current data.
+ * redoableCount: The amount of elements that have been removed with undo, but can still be recovered with redo.
+ * push: Function that allows pushing a new element to the array. Removes all stored redoable elements.
+ * undo: Function that removes the last element of the array, but stores it for a possible redo.
+ * redo: Function that pushes the last element that was removed with undo back to the array.
+ * reset: Clears both the array and the stored redoable elements completely.
  */
 export default function useArrayWithUndo<T>(
 	defaultValue: Array<T> = []
@@ -25,7 +31,7 @@ export default function useArrayWithUndo<T>(
 	 * Add a new value at the end of the array. This will reset the stored list of undoable elements.
 	 * @param value
 	 */
-	function add(value: T) {
+	function push(value: T) {
 		setElements([...elements, value]);
 
 		// When adding new data, reset the undo queue, if there is any
@@ -67,7 +73,7 @@ export default function useArrayWithUndo<T>(
 		setUndoneElements([]);
 	}
 
-	const undoableCount = undoneElements.length;
+	const redoableCount = undoneElements.length;
 
-	return [elements, undoableCount, add, undo, redo, reset];
+	return [elements, redoableCount, push, undo, redo, reset];
 }
