@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export default function useLocalStorage<T>(key: string, defaultValue: T) {
+type TTuple<T> = [
+	T | undefined,
+	React.Dispatch<React.SetStateAction<T | undefined>>,
+	() => void
+];
+
+function useLocalStorage<T>(key: string, defaultValue: T): TTuple<T> {
 	const [value, setValue] = useState<T | undefined>(() => {
 		const jsonValue = localStorage.getItem(key);
 
@@ -27,12 +33,7 @@ export default function useLocalStorage<T>(key: string, defaultValue: T) {
 		setValue(undefined);
 	}, []);
 
-	const externalSetValue = useCallback(
-		(newValue: T) => {
-			return setValue(newValue);
-		},
-		[setValue]
-	);
-
-	return [value, externalSetValue, remove];
+	return [value, setValue, remove];
 }
+
+export default useLocalStorage;
