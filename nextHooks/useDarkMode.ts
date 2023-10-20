@@ -3,7 +3,7 @@ import useLocalStorage from './useLocalStorage';
 
 export default function useDarkMode(
 	defaultValue?: boolean
-): [boolean, () => void] {
+): [boolean, (newValue?: boolean) => void] {
 	const [
 		isDarkModeEnabled,
 		setCurrentMode,
@@ -20,9 +20,16 @@ export default function useDarkMode(
 		}
 	}, [isDarkModeEnabled, setCurrentMode, darkModeIsLoading]);
 
-	const toggleDarkMode = useCallback(() => {
-		setCurrentMode((current) => !current);
-	}, [setCurrentMode]);
+	const toggleDarkMode = useCallback(
+		(newValue?: boolean) => {
+			if (newValue !== undefined) {
+				setCurrentMode(newValue);
+			} else {
+				setCurrentMode((current) => !current);
+			}
+		},
+		[setCurrentMode]
+	);
 
 	// For use with tailwind, required darkMode to be set to 'class' in the tailwind.config.js
 	useEffect(() => {
